@@ -7,35 +7,24 @@ showSignaturesButton.addEventListener('click', async () => {
   let name = tab.url.substring('https://twitter.com/'.length);
 
   let signatures = await (await fetch(`http://localhost:3000/accounts/getSignatures?handle=${name}`)).json();
-  let domains = signatures.map((signature) => signature.disclosed[1][0].rawvalue)
 
   await chrome.scripting.executeScript({
     target: {tabId: tab.id},
     func: showSignatures,
-    args: [domains]
+    args: [signatures]
   });
 });
 
 addSignatureButton.addEventListener('click', async () => {
   let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-  const request = {
-    '@context': 'https://irma.app/ld/request/signature/v2',
-    'message': tab.url,
-    'disclose': [[[ 'irma-demo.pbdf.twitter.username' ]],  [['irma-demo.sidn-pbdf.email.domain']]]
-  };
 
-  irma.startSession('http://localhost:8088', request)
-      .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: 'http://localhost:8088', token: token}))
-      .then(result => {
-        console.log(result);
-        $.ajax({
-          type: 'post',
-          url: 'http://localhost:3000/accounts/addSignature',
-          data: JSON.stringify(result),
-          dataType: 'json',
-          contentType: 'application/json'
-        });
-      });
+  $.ajax({
+    type: 'post',
+    url: 'http://localhost:3000/accounts/addSignature',
+    data: JSON.stringify({username: tab.url.split('/').at(-1), message: $('#domain').val()}),
+    dataType: 'json',
+    contentType: 'application/json'
+  });
 });
 
 showSignatures = function(signatures) {

@@ -20,8 +20,8 @@ app.get('/accounts/getSignatures', (req, res) => {
 
 app.post('/accounts/addSignature', (req, res) => {
     let signature = req.body;
-    let twitterHandle = signature.disclosed[0][0].rawvalue;
-    addSignature(twitterHandle, signature);
+    addSignature(signature.username, signature.message);
+    res.send('success');
 })
 
 app.listen(port, () => {
