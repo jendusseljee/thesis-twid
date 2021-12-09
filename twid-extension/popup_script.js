@@ -2,6 +2,7 @@
 let showSignaturesButton = document.getElementById("show_signatures_button");
 let addSignatureButton = document.getElementById("add_irma_signature");
 
+// The callback for the 'Show signatures' button. TODO: Verify signatures and display them differently if they are not valid.
 showSignaturesButton.addEventListener('click', async () => {
   let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   let name = tab.url.substring('https://twitter.com/'.length);
@@ -16,6 +17,7 @@ showSignaturesButton.addEventListener('click', async () => {
   });
 });
 
+// Initiates the signing procedure in IRMA and sends the signature to the backend.
 addSignatureButton.addEventListener('click', async () => {
   let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   const request = {
@@ -38,6 +40,7 @@ addSignatureButton.addEventListener('click', async () => {
       });
 });
 
+// Renders the signatures in the HTML.
 showSignatures = function(signatures) {
   let name = window.location.pathname.substring(1);
   for (const span of document.querySelectorAll("span")) {
